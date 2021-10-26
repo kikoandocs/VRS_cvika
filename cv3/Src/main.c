@@ -21,92 +21,85 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "assignment.h"
-int state=0;
-int LastButton=0;
+int state = 0;
+int LastButton = 0;
 
-int main(void)
-{
-  /*
-   *  DO NOT WRITE TO THE WHOLE REGISTER!!!
-   *  Write to the bits, that are meant for change.
-   */
-   
-  //Systick init
-  LL_Init1msTick(8000000);
-  LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
-  LL_SetSystemCoreClock(8000000);	
+int main(void) {
+	/*
+	 *  DO NOT WRITE TO THE WHOLE REGISTER!!!
+	 *  Write to the bits, that are meant for change.
+	 */
 
-  /*
-   * TASK - configure MCU peripherals so that button state can be read and LED will blink.
-   * Button must be connected to the GPIO port A and its pin 3.
-   * LED must be connected to the GPIO port A and its pin 4.
-   *
-   * In header file "assignment.h" define macros for MCU registers access and LED blink application.
-   * Code in this file must use these macros for the peripherals setup.
-   * Code of the LED blink application is already given so just the macros used in the application must be defined.
-   */
+	//Systick init
+	LL_Init1msTick(8000000);
+	LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
+	LL_SetSystemCoreClock(8000000);
 
+	/*
+	 * TASK - configure MCU peripherals so that button state can be read and LED will blink.
+	 * Button must be connected to the GPIO port A and its pin 3.
+	 * LED must be connected to the GPIO port A and its pin 4.
+	 *
+	 * In header file "assignment.h" define macros for MCU registers access and LED blink application.
+	 * Code in this file must use these macros for the peripherals setup.
+	 * Code of the LED blink application is already given so just the macros used in the application must be defined.
+	 */
 
-  /* Enable clock for GPIO port A*/
+	/* Enable clock for GPIO port A*/
 
 	//type your code for GPIOA clock enable here:
-  RCC_AHBENR_REG |= (uint32_t)(1 << 17);
+	RCC_AHBENR_REG |= (uint32_t) (1 << 17);
 
-  /* GPIOA pin 3 and 4 setup */
+	/* GPIOA pin 3 and 4 setup */
 
 	//type your code for GPIOA pins setup here:
-  GPIOA_MODER_REG &= ~(uint32_t)(0x3 << 8);
-  GPIOA_MODER_REG |= (uint32_t)(1 << 8);
+	GPIOA_MODER_REG &= ~(uint32_t) (0x3 << 8);
+	GPIOA_MODER_REG |= (uint32_t) (1 << 8);
 
-  GPIOA_MODER_REG &= ~(uint32_t)(0x3 << 6);
+	GPIOA_MODER_REG &= ~(uint32_t) (0x3 << 6);
 
-  GPIOA_OTYPER_REG &= ~(1 << 4);
+	GPIOA_OTYPER_REG &= ~(1 << 4);
 
-  GPIOA_OSPEEDER_REG &= ~(0x3 << 8);
+	GPIOA_OSPEEDER_REG &= ~(0x3 << 8);
 
-  GPIOA_PUPDR_REG &= ~(0x3 << 6);
-  GPIOA_PUPDR_REG |= (1 << 6);
+	GPIOA_PUPDR_REG &= ~(0x3 << 6);
+	GPIOA_PUPDR_REG |= (1 << 6);
 
-  GPIOA_PUPDR_REG &= ~(0x3 << 8);
+	GPIOA_PUPDR_REG &= ~(0x3 << 8);
 
+	while (1) {
 
+		if (edgeDetect(BUTTON_GET_STATE, 100) == FALL) {
+			if (!(GPIOA_IDR_REG & (1 << 4)))
+				LED_ON;
+			else
+				LED_OFF;
 
-  while (1)
-  {
-
-	  LastButton=BUTTON_GET_STATE;
-	  edgeDetect(LastButton, 5);
-	  /*if(BUTTON_GET_STATE)
-	  {
-		  // 0.25s delay
-		  LL_mDelay(250);
-		  LED_ON;
-		  // 0.25s delay
-		  LL_mDelay(250);
-		  LED_OFF;
-	  }
-	  else
-	  {
-		  // 1s delay
-		  LL_mDelay(1000);
-		  LED_ON;
-		  // 1s delay
-		  LL_mDelay(1000);
-		  LED_OFF;
-	  }*/
-  }
-
+		}
+	}
 }
 
 /* USER CODE BEGIN 4 */
-void edgeDetect(uint8_t pin_state, uint8_t samples){
-	while(i<samples){
-		if(LastButton != BUTTON_GET_STATE){
-			i++;
-		}
-		else i=0;
+EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples) {
+	uint8_t i = 0;
+	uint8_t temp = pin_state;
+
+	while (pin_state == temp) {
+		temp = BUTTON_GET_STATE;
 	}
-	change=1;
+	while (i < samples) {
+		if (temp == BUTTON_GET_STATE) {
+			i++;
+		} else
+			return NONE;
+	}
+	if (i >= samples && pin_state == 0)
+		return RISE;
+	else if (i >= samples && pin_state == 1)
+		return FALL;
+
+	return NONE;
+
 }
 /* USER CODE END 4 */
 
