@@ -21,6 +21,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "assignment.h"
+int state=0;
+int LastButton=0;
 
 int main(void)
 {
@@ -68,9 +70,13 @@ int main(void)
   GPIOA_PUPDR_REG &= ~(0x3 << 8);
 
 
+
   while (1)
   {
-	  if(BUTTON_GET_STATE)
+
+	  LastButton=BUTTON_GET_STATE;
+	  edgeDetect(LastButton, 5);
+	  /*if(BUTTON_GET_STATE)
 	  {
 		  // 0.25s delay
 		  LL_mDelay(250);
@@ -87,13 +93,21 @@ int main(void)
 		  // 1s delay
 		  LL_mDelay(1000);
 		  LED_OFF;
-	  }
+	  }*/
   }
 
 }
 
 /* USER CODE BEGIN 4 */
-
+void edgeDetect(uint8_t pin_state, uint8_t samples){
+	while(i<samples){
+		if(LastButton != BUTTON_GET_STATE){
+			i++;
+		}
+		else i=0;
+	}
+	change=1;
+}
 /* USER CODE END 4 */
 
 /**
