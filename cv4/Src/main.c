@@ -50,17 +50,48 @@ int main(void)
 
   /* Configure external interrupt - EXTI*/
 
-  	  //type your code for EXTI configuration (priority, enable EXTI, setup EXTI for input pin, trigger edge) here:
+
+  //type your code for EXTI configuration (priority, enable EXTI, setup EXTI for input pin, trigger edge) here:
+
+  NVIC_EnableIRQ(EXTI4_IRQn);
+  NVIC_SetPriority(EXTI4_IRQn, 1);
+
+  //Set interrupt priority and enable EXTI
+  //NVIC->IP[9] |= 2 << 4;
+  //NVIC->ISER[0] |= 1 << 9;
+
+  /*set EXTI source PB4*/
+  SYSCFG->EXTICR[1] &= ~SYSCFG_EXTICR2_EXTI4;
+  SYSCFG->EXTICR[1] |= SYSCFG_EXTICR2_EXTI4_PB;
+  //Enable interrupt from EXTI line 3
+  EXTI->IMR |= EXTI_IMR_MR4;
+  //Set EXTI trigger to falling edge
+  EXTI->RTSR &= ~(EXTI_RTSR_TR4);
+  EXTI->FTSR |= EXTI_FTSR_TR4;
 
 
   /* Configure GPIOB-4 pin as an input pin - button */
 
-	  //type your code for GPIO configuration here:
+  //type your code for GPIO configuration here:
+
+  RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
+  GPIOB->MODER &= ~(GPIO_MODER_MODER4);
+  GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR4);
+  GPIOB->PUPDR |= GPIO_PUPDR_PUPDR4_0;
 
 
   /* Configure GPIOA-4 pin as an output pin - LED */
 
-	  //type your code for GPIO configuration here:
+  //type your code for GPIO configuration here:
+
+  RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+  GPIOA->MODER &= ~(GPIO_MODER_MODER4);
+  GPIOA->MODER |= GPIO_MODER_MODER4_0;
+  GPIOA->OTYPER &= ~(GPIO_OTYPER_OT_4);
+  GPIOA->OSPEEDR &= ~(GPIO_OSPEEDER_OSPEEDR4);
+  GPIOA->PUPDR &= ~(GPIO_PUPDR_PUPDR4);
+
+
 
 
   while (1)
@@ -68,14 +99,14 @@ int main(void)
 	  // Modify the code below so it sets/resets used output pin connected to the LED
 	  if(switch_state)
 	  {
-		  GPIOB->BSRR |= GPIO_BSRR_BS_3;
+		  GPIOA->BSRR |= (1 << 4);//|= GPIO_BSRR_BS_4;
 		  for(uint16_t i=0; i<0xFF00; i++){}
-		  GPIOB->BRR |= GPIO_BRR_BR_3;
+		  GPIOA->BRR |= (1 << 4);//|= GPIO_BRR_BR_4;
 		  for(uint16_t i=0; i<0xFF00; i++){}
 	  }
 	  else
 	  {
-		  GPIOB->BRR |= GPIO_BRR_BR_3;
+		  GPIOA->BRR |= GPIO_BRR_BR_4;
 	  }
   }
 
@@ -120,6 +151,31 @@ void SystemClock_Config(void)
 uint8_t checkButtonState(GPIO_TypeDef* PORT, uint8_t PIN, uint8_t edge, uint8_t samples_window, uint8_t samples_required)
 {
 	  //type your code for "checkButtonState" implementation here:
+	  uint8_t button_state = 0, timeout = 0;
+
+		while(button_state < samples_required && timeout < samples_window)
+		{
+			if(!(PORT->IDR & (1 << PIN))/*LL_GPIO_IsInputPinSet(PORT, PIN)*/)
+			{
+				button_state += 1;
+			}
+			else
+			{
+				button_state = 0;
+			}
+
+			timeout += 1;
+			LL_mDelay(1);
+		}
+
+		if((button_state >= samples_required) && (timeout <= samples_window))
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
 }
 
 
@@ -137,6 +193,7 @@ void EXTI4_IRQHandler(void)
 	/* Clear EXTI4 pending register flag */
 
 		//type your code for pending register flag clear here:
+	EXTI->PR |= (EXTI_PR_PR4);
 }
 
 /* USER CODE BEGIN 4 */
