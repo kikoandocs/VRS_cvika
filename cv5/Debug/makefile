@@ -61,8 +61,8 @@ all: main-build
 main-build: cv5.elf secondary-outputs
 
 # Tool invocations
-cv5.elf: $(OBJS) $(USER_OBJS) D:\STU\VRS\VRS_cvika\cv5\STM32F303K8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "cv5.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\STU\VRS\VRS_cvika\cv5\STM32F303K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="cv5.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+cv5.elf: $(OBJS) $(USER_OBJS) C:\Users\Samuel\Documents\VRS_cvika\cv5\STM32F303K8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "cv5.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Samuel\Documents\VRS_cvika\cv5\STM32F303K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="cv5.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
