@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file    usart.c
-  * @brief   This file provides code for the configuration
-  *          of the USART instances.
+  * File Name          : USART.c
+  * Description        : This file provides code for the configuration
+  *                      of the USART instances.
   ******************************************************************************
   * @attention
   *
@@ -21,27 +21,16 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-static void (* usart2_callback)(uint8_t) = 0;
 
-void USART2_RegisterCallback(void *callback)
-{
-	usart2_callback = callback;
-}
 /* USER CODE END 0 */
 
 /* USART2 init function */
 
 void MX_USART2_UART_Init(void)
 {
-
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
   LL_USART_InitTypeDef USART_InitStruct = {0};
 
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
-
   /* Peripheral clock enable */
   LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART2);
 
@@ -58,14 +47,7 @@ void MX_USART2_UART_Init(void)
   GPIO_InitStruct.Alternate = LL_GPIO_AF_7;
   LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /* USART2 interrupt Init */
-  NVIC_SetPriority(USART2_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
-  NVIC_EnableIRQ(USART2_IRQn);
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  USART_InitStruct.BaudRate = 115200;
+  USART_InitStruct.BaudRate = 38400;
   USART_InitStruct.DataWidth = LL_USART_DATAWIDTH_8B;
   USART_InitStruct.StopBits = LL_USART_STOPBITS_1;
   USART_InitStruct.Parity = LL_USART_PARITY_NONE;
@@ -75,23 +57,11 @@ void MX_USART2_UART_Init(void)
   LL_USART_Init(USART2, &USART_InitStruct);
   LL_USART_DisableIT_CTS(USART2);
   LL_USART_ConfigAsyncMode(USART2);
-
-  /* USER CODE BEGIN USART2_Init 2 */
-  LL_USART_EnableIT_RXNE(USART2);
   LL_USART_Enable(USART2);
-  /* USER CODE END USART2_Init 2 */
 
 }
 
 /* USER CODE BEGIN 1 */
-
-void rx_usart2(uint8_t ch)
-{
-	if (usart2_callback != 0)
-	{
-		usart2_callback(ch);
-	}
-}
 
 /* USER CODE END 1 */
 

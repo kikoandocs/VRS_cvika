@@ -17,6 +17,7 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "usart.h"
@@ -34,6 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -50,7 +52,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void process_serial_data(uint8_t ch);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -65,8 +67,7 @@ void process_serial_data(uint8_t ch);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	char tx_data[12] = "LED STATUS: ";
-	uint8_t i=0;
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -79,8 +80,6 @@ int main(void)
   NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 
   /* System interrupt init*/
-  /* SysTick_IRQn interrupt configuration */
-  NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),15, 0));
 
   /* USER CODE BEGIN Init */
 
@@ -97,36 +96,18 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  USART2_RegisterCallback(process_serial_data);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	while (1) {
-		/* USER CODE END WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
 
-		/* USER CODE BEGIN 3 */
-		LL_USART_TransmitData8(USART2, tx_data[i++]);
-		LL_mDelay(50);
-		if (i >= sizeof(tx_data)) {
-			if ((LL_GPIO_ReadInputPort(LED_GPIO_Port) & (1 << 3)) >> 3) {
-				LL_USART_TransmitData8(USART2, '1');
-				LL_mDelay(50);
-				i = 0;
-
-			} else {
-				LL_USART_TransmitData8(USART2, '0');
-				LL_mDelay(50);
-				i = 0;
-			}
-			LL_USART_TransmitData8(USART2, '\n');
-			LL_mDelay(50);
-			LL_USART_TransmitData8(USART2, '\r');
-
-			LL_mDelay(5000);
-		}
-	}
-	/* USER CODE END 3 */
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
 }
 
 /**
@@ -136,8 +117,10 @@ int main(void)
 void SystemClock_Config(void)
 {
   LL_FLASH_SetLatency(LL_FLASH_LATENCY_0);
-  while(LL_FLASH_GetLatency()!= LL_FLASH_LATENCY_0)
+
+  if(LL_FLASH_GetLatency() != LL_FLASH_LATENCY_0)
   {
+  Error_Handler();
   }
   LL_RCC_HSI_Enable();
 
@@ -149,7 +132,7 @@ void SystemClock_Config(void)
   LL_RCC_HSI_SetCalibTrimming(16);
   LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
   LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
-  LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
+  LL_RCC_SetAPB2Prescaler(LL_RCC_APB1_DIV_1);
   LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_HSI);
 
    /* Wait till System clock is ready */
@@ -158,47 +141,11 @@ void SystemClock_Config(void)
 
   }
   LL_Init1msTick(8000000);
+  LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
   LL_SetSystemCoreClock(8000000);
 }
 
 /* USER CODE BEGIN 4 */
-
-void process_serial_data(uint8_t ch) {
-	static uint8_t count = 0;
-
-	char LED_ON[5] = "ledON";
-	char LED_OFF[6] = "ledOFF";
-
-	if ((LL_GPIO_ReadInputPort(LED_GPIO_Port) & (1 << 3)) >> 3) {
-
-		if (ch == LED_OFF[count]) {
-			count++;
-
-			if (count >= sizeof(LED_OFF)) {
-				LL_GPIO_ResetOutputPin(LED_GPIO_Port, LED_Pin);
-				count = 0;
-				return;
-			}
-
-		} else if (ch == '\n' || ch == '\r') {
-
-		}
-
-	} else {
-		if (ch == LED_ON[count]) {
-			count++;
-
-			if (count >= sizeof(LED_ON)) {
-				LL_GPIO_SetOutputPin(LED_GPIO_Port, LED_Pin);
-				count = 0;
-				return;
-			}
-
-		} else if (ch == '\n' || ch == '\r') {
-
-		}
-	}
-}
 
 /* USER CODE END 4 */
 
@@ -210,10 +157,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+
   /* USER CODE END Error_Handler_Debug */
 }
 
@@ -225,11 +169,11 @@ void Error_Handler(void)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(uint8_t *file, uint32_t line)
+void assert_failed(char *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
