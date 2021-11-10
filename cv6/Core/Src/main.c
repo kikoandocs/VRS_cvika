@@ -182,6 +182,11 @@ void process_serial_data(uint8_t ch) {
 
 		} else if (ch == '\n' || ch == '\r') {
 
+		} else if (ch == LED_OFF[0]) {
+			count = 1;
+
+		} else {
+			count = 0;
 		}
 
 	} else {
@@ -196,6 +201,11 @@ void process_serial_data(uint8_t ch) {
 
 		} else if (ch == '\n' || ch == '\r') {
 
+		} else if (ch == LED_ON[0]) {
+			count = 1;
+
+		} else {
+			count = 0;
 		}
 	}
 }
