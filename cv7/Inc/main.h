@@ -80,7 +80,6 @@ typedef struct
 #define SIGN_FILE_END '$'
 buffer_capacity_ BufferCapacity;
 
-
 #ifdef __cplusplus
 }
 #endif
