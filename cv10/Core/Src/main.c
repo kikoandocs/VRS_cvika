@@ -26,7 +26,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,7 +49,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t ledDriverAuto = 1;
+uint8_t ledDriverMode = 1;
 uint8_t pwmDutyCycle = 0;
 uint8_t requestedDutyCycle = 0;
 int8_t ledFadeMode = 1;
@@ -60,7 +63,7 @@ void transmitData(uint8_t* data,uint16_t len);
 
 void updatePWM();
 void setLedPwm(uint8_t* sign,uint16_t len);
-void changeMode(uint8_t newMode);
+void setLedDriverMode(uint8_t newMode);
 void setDutyCycle(uint8_t D);
 /* USER CODE END PFP */
 
@@ -120,6 +123,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  LL_mDelay(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -161,20 +165,20 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-void proccesDmaData(uint8_t* sign,uint16_t len) {
-
+void proccesDmaData(uint8_t *sign, uint16_t len) {
+	//TODO: finish DMA data processing
 }
 
 void transmitData(uint8_t* data,uint16_t len){
-
+	//TODO: finish UART data transmit
 }
 
 void updatePWM() {
-	if (ledDriverAuto == 1) {
+	if (ledDriverMode == 1) {
 		pwmDutyCycle += ledFadeMode;
 		if (pwmDutyCycle <= 0 || pwmDutyCycle >= 100)
 			ledFadeMode *= -1;
-	} else if (ledDriverAuto == 0) {
+	} else if (ledDriverMode == 0) {
 		if (requestedDutyCycle < pwmDutyCycle) {
 			pwmDutyCycle -= 1;
 		} else if (requestedDutyCycle > pwmDutyCycle) {
@@ -184,19 +188,56 @@ void updatePWM() {
 	setDutyCycle(pwmDutyCycle);
 }
 
-void setLedPwm(uint8_t* sign,uint16_t len){
+void setLedPwm(uint8_t *sign, uint16_t len) {
+	uint8_t *tx_data;
+	char str[len];
+	int len_data;
+	char charset[] = "0123456789";
 
+	for (int j = 0; j < len; j++) {
+		str[j] = *(sign + j);
+	}
+	if (strstr(str, "$PWM")
+			&& ((*(strpbrk(str, charset) + 1) == '$')
+					|| (*(strpbrk(str, charset) + 2) == '$')
+					|| (*(strpbrk(str, charset) + 3) == '$'))) {
+		requestedDutyCycle = atoi(strpbrk(str, charset));
+		len_data = asprintf(&tx_data, "The brightness of LED is set to: %d % \n\r",
+				requestedDutyCycle);
+		transmitData(tx_data, len_data);
+		free(tx_data);
+	} else {
+		len_data = asprintf(&tx_data, "End char '$' not found \n\r");
+		transmitData(tx_data, len_data);
+		free(tx_data);
+	}
 }
 
-void changeMode(uint8_t newMode){
-
+void setLedDriverMode(uint8_t newMode) {
+	uint8_t *tx_data;
+	ledDriverMode = newMode;
+	int len_data;
+	switch (newMode) {
+	case 0:
+		LL_mDelay(50);
+		len_data = asprintf(&tx_data, "Mode is set to:  MANUAL\n\r");
+		transmitData(tx_data, len_data);
+		free(tx_data);
+		break;
+	case 1:
+		LL_mDelay(50);
+		len_data = asprintf(&tx_data, "Mode is set to:  AUTOMATIC\n\r");
+		transmitData(tx_data, len_data);
+		free(tx_data);
+		break;
+	default:
+		break;
+	}
 }
 
 void setDutyCycle(uint8_t D){
-
+	TIM2->CCR1 = ((TIM2->ARR) * D) / 100;
 }
-
-
 /* USER CODE END 4 */
 
 /**

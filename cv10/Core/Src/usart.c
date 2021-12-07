@@ -82,7 +82,7 @@ void MX_USART2_UART_Init(void)
 
   LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_7, LL_DMA_PRIORITY_MEDIUM);
 
-  LL_DMA_SetMode(DMA1, LL_DMA_CHANNEL_7, LL_DMA_MODE_CIRCULAR);
+  LL_DMA_SetMode(DMA1, LL_DMA_CHANNEL_7, LL_DMA_MODE_NORMAL);
 
   LL_DMA_SetPeriphIncMode(DMA1, LL_DMA_CHANNEL_7, LL_DMA_PERIPH_NOINCREMENT);
 
@@ -142,11 +142,8 @@ void MX_USART2_UART_Init(void)
 /* USER CODE BEGIN 1 */
 void USART2_PutBuffer(uint8_t *buffer, uint8_t length) {
 	LL_DMA_SetMemoryAddress(DMA1, LL_DMA_CHANNEL_7, (uint32_t) buffer);
-
 	LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_7, length);
-
 	LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_7);
-
 	LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_7);
 }
 
