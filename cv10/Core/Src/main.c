@@ -166,11 +166,46 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 
 void proccesDmaData(uint8_t *sign, uint16_t len) {
-	//TODO: finish DMA data processing
+	uint8_t *tx_data;
+	char str[len];
+	int len_data;
+	for (int j = 0; j < len; j++) {
+		str[j] = *(sign + j);
+	}
+	if (strstr(str, "$manual$") || strstr(str, "$MANUAL$")) {
+		setLedDriverMode(0);
+	} else if (strstr(str, "$auto$") || strstr(str, "$AUTO$")) {
+		setLedDriverMode(1);
+	} else if (strstr(str, "$PWM") || strstr(str, "$pwm")) {
+		setLedPwm(sign, len);
+	} else if (strstr(str, "$help$") || strstr(str, "$HELP$")) {
+		len_data = asprintf(&tx_data, "Valid command:\n\r"
+				"$auto$ - automatic mode\n\r"
+				"$manual$ - manual mode\n\r"
+				"$PWMxx$ - PWM settings in manual mode\n\r"
+				"$mode$ - show actual LED driver mode\n\r");
+		transmitData(tx_data, len_data);
+		free(tx_data);
+	} else if (strstr(str, "$mode$") || strstr(str, "$MODE$")) {
+		if (ledDriverMode == 0) {
+			len_data = asprintf(&tx_data, "Mode is set to:  MANUAL\n\r");
+			transmitData(tx_data, len_data);
+			free(tx_data);
+		} else if (ledDriverMode == 1) {
+			len_data = asprintf(&tx_data, "Mode is set to:  AUTOMATIC\n\r");
+			transmitData(tx_data, len_data);
+			free(tx_data);
+		}
+	} else {
+		len_data = asprintf(&tx_data, "\n\rInvalid command\n\r"
+				"Type $help$ to show list of valid commands\n\r");
+		transmitData(tx_data, len_data);
+		free(tx_data);
+	}
 }
 
 void transmitData(uint8_t* data,uint16_t len){
-	//TODO: finish UART data transmit
+	USART2_PutBuffer(data, len);
 }
 
 void updatePWM() {
