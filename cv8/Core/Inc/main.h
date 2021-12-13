@@ -86,6 +86,8 @@ void Error_Handler(void);
 #define digt1_GPIO_Port GPIOA
 #define digt3_Pin LL_GPIO_PIN_6
 #define digt3_GPIO_Port GPIOA
+#define digt5_Pin LL_GPIO_PIN_7
+#define digt5_GPIO_Port GPIOA
 #define segDP_Pin LL_GPIO_PIN_1
 #define segDP_GPIO_Port GPIOB
 #define segC_Pin LL_GPIO_PIN_8
