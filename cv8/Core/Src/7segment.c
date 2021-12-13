@@ -410,3 +410,54 @@ void set9(void){
 		LL_GPIO_ResetOutputPin(GPIOA, segF_Pin);
 		LL_GPIO_ResetOutputPin(GPIOB, segG_Pin);
 }
+
+void writeToDisplay(uint8_t activeChar){
+	// KIKO_ANDOCS_98308
+	switch(activeChar){
+	case 0:
+	case 2:
+		setK();
+		break;
+	case 1:
+		setI();
+		break;
+	case 3:
+	case 8:
+		setO();
+		break;
+	case 4:
+	case 11:
+		set_();
+		break;
+	case 5:
+		setA();
+		break;
+	case 6:
+		setN();
+		break;
+	case 7:
+		setD();
+		break;
+	case 9:
+		setC();
+		break;
+	case 10:
+		setS();
+		break;
+	case 12:
+		set9();
+		break;
+	case 13:
+	case 16:
+		set8();
+		break;
+	case 14:
+		set3();
+		break;
+	case 15:
+		set0();
+		break;
+	default:
+		break;
+	}
+}

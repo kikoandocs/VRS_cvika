@@ -25,6 +25,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "7segment.h"
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,13 +46,17 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t digitCycle = 0;
+uint8_t textPosition = 0;
+uint8_t shiftDirection = 1;
+const uint8_t textLength = 17;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void refreshDisplay();
+void shiftText();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -104,6 +110,26 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  switch (digitCycle) {
+	  	case 0:
+	  		writeToDisplay(textPosition + digitCycle);
+	  		setDigt1();
+	  		break;
+	  	case 1:
+	  		writeToDisplay(textPosition + digitCycle);
+	  		setDigt2();
+	  		break;
+	  	case 2:
+	  		writeToDisplay(textPosition + digitCycle);
+	  		setDigt3();
+	  		break;
+	  	case 3:
+	  		writeToDisplay(textPosition + digitCycle);
+	  		setDigt4();
+	  		break;
+	  	default:
+	  		break;
+	  	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -144,7 +170,19 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void refreshDisplay() {
+	digitCycle++;
+	if (digitCycle >= 4) {
+		digitCycle = 0;
+	}
+}
+void shiftText() {
+	textPosition += shiftDirection;
+	digitCycle = 0;
+	if (textPosition >= textLength-4 || textPosition <= 0) {
+		shiftDirection *= -1;
+	}
+}
 /* USER CODE END 4 */
 
 /**

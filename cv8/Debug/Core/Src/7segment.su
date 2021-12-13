@@ -44,3 +44,4 @@ stm32f3xx_ll_gpio.h:908:22:LL_GPIO_ResetOutputPin	16	static
 7segment.c:383:6:set7	8	static
 7segment.c:393:6:set8	8	static
 7segment.c:403:6:set9	8	static
+7segment.c:414:6:writeToDisplay	16	static
