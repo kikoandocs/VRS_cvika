@@ -83,8 +83,8 @@ void Error_Handler(void);
 #define segF_GPIO_Port GPIOA
 #define digt2_Pin LL_GPIO_PIN_4
 #define digt2_GPIO_Port GPIOA
-#define digt_time_Pin LL_GPIO_PIN_7
-#define digt_time_GPIO_Port GPIOA
+#define digt5_Pin LL_GPIO_PIN_7
+#define digt5_GPIO_Port GPIOA
 #define digt1_Pin LL_GPIO_PIN_0
 #define digt1_GPIO_Port GPIOB
 #define segDP_Pin LL_GPIO_PIN_1

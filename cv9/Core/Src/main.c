@@ -25,7 +25,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "7segment.h"
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,13 +47,20 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t digitCycle = 0;
+uint8_t textPosition = 0;
+uint8_t shiftDirection = 1;
+uint8_t actualParam = 0;
+float values[4] = {0,0,0,0};
+const uint8_t textLength[4] = {8,6,10,9};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void refreshDisplay();
+void shiftText();
+void selectParam();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -106,9 +115,30 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  switch (digitCycle) {
+	  case 0:
+		  writeToDisplay(actualParam, textPosition + digitCycle, values[actualParam]);
+		  setDigt1();
+		  break;
+	  case 1:
+		  writeToDisplay(actualParam, textPosition + digitCycle, values[actualParam]);
+		  setDigt2();
+		  break;
+	  case 2:
+		  writeToDisplay(actualParam, textPosition + digitCycle, values[actualParam]);
+		  setDigt3();
+		  break;
+	  case 3:
+		  writeToDisplay(actualParam, textPosition + digitCycle, values[actualParam]);
+		  setDigt4();
+		  break;
+	  default:
+		  break;
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }
@@ -147,7 +177,35 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void refreshDisplay() {
+	digitCycle++;
+	if (digitCycle >= 4) {
+		digitCycle = 0;
+	}
+}
+void shiftText() {
+	uint8_t offset = 4;
+	textPosition += shiftDirection;
+	digitCycle = 0;
+	if (values[actualParam]<0){
+		offset--;
+	}
+	if (textPosition >= textLength[actualParam]-offset || textPosition <= 0) {
+		shiftDirection *= -1;
+	}
+}
+void selectParam() {
+	actualParam++;
+	if (actualParam >= 4) {
+		actualParam = 0;
+	}
+	resetCounters();
+}
+void resetCounters() {
+	digitCycle = 0;
+	textPosition = 0;
+	shiftDirection = 1;
+}
 /* USER CODE END 4 */
 
 /**
