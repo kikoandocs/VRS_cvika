@@ -60,7 +60,7 @@ void set7(void);
 void set8(void);
 void set9(void);
 
-void num2seg(uint8_t number);
+void num2seg(int8_t number);
 void writeToDisplay(uint8_t activeParam, uint8_t activeChar, float value);
 void writeTemp(uint8_t activeChar, float value);
 void writeHum(uint8_t activeChar, float value);

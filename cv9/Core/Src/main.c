@@ -51,7 +51,7 @@ uint8_t digitCycle = 0;
 uint8_t textPosition = 0;
 uint8_t shiftDirection = 1;
 uint8_t actualParam = 0;
-float values[4] = {0,0,0,0};
+float values[4] = {0.2,11,2222.22,3333.3};
 const uint8_t textLength[4] = {8,6,10,9};
 /* USER CODE END PV */
 
