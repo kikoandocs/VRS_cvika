@@ -21,4 +21,4 @@ stm32f3xx_ll_bus.h:537:22:LL_APB1_GRP1_EnableClock	24	static
 i2c.c:30:6:MX_I2C1_Init	64	static
 i2c.c:86:6:i2c_master_write	32	static
 i2c.c:101:10:i2c_master_read	24	static
-i2c.c:138:6:I2C1_Master_Reception_Callback	16	static
+i2c.c:136:6:I2C1_Master_Reception_Callback	16	static

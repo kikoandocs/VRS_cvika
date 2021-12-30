@@ -133,8 +133,6 @@ uint8_t* i2c_master_read(uint8_t *buffer, uint8_t length, uint8_t register_addr,
 
 	return aReceiveBuffer_read;
 }
-
-
 void I2C1_Master_Reception_Callback(void) {
 	aReceiveBuffer_read[ubReceiveIndex++] = LL_I2C_ReceiveData8(I2C1);
 			(ubReceiveIndex > 19) ? ubReceiveIndex = 0 : ubReceiveIndex;

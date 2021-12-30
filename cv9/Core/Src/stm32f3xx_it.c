@@ -42,7 +42,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+uint16_t counter = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -226,9 +226,14 @@ void TIM2_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM2_IRQn 0 */
 	if (LL_TIM_IsActiveFlag_UPDATE(TIM2)) {
-		shiftText();
+		refreshDisplay();
+		if(counter>=1000){
+			shiftText();
+			counter = 0;
+		}
 	}
 	LL_TIM_ClearFlag_UPDATE(TIM2);
+	counter++;
 
   /* USER CODE END TIM2_IRQn 0 */
   /* USER CODE BEGIN TIM2_IRQn 1 */
@@ -237,35 +242,19 @@ void TIM2_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles TIM3 global interrupt.
-  */
-void TIM3_IRQHandler(void)
-{
-  /* USER CODE BEGIN TIM3_IRQn 0 */
-	if (LL_TIM_IsActiveFlag_UPDATE(TIM3)) {
-		refreshDisplay();
-		}
-		LL_TIM_ClearFlag_UPDATE(TIM3);
-
-  /* USER CODE END TIM3_IRQn 0 */
-  /* USER CODE BEGIN TIM3_IRQn 1 */
-
-  /* USER CODE END TIM3_IRQn 1 */
-}
-
-/**
   * @brief This function handles I2C1 event global interrupt / I2C1 wake-up interrupt through EXT line 23.
   */
-void I2C1_EV_IRQHandler(void) {
-	/* USER CODE BEGIN I2C1_EV_IRQn 0 */
+void I2C1_EV_IRQHandler(void)
+{
+  /* USER CODE BEGIN I2C1_EV_IRQn 0 */
 	if (LL_I2C_IsActiveFlag_RXNE(I2C1)) {
 		I2C1_Master_Reception_Callback();
 	}
-/* USER CODE END I2C1_EV_IRQn 0 */
+  /* USER CODE END I2C1_EV_IRQn 0 */
 
-/* USER CODE BEGIN I2C1_EV_IRQn 1 */
+  /* USER CODE BEGIN I2C1_EV_IRQn 1 */
 
-/* USER CODE END I2C1_EV_IRQn 1 */
+  /* USER CODE END I2C1_EV_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

@@ -58,6 +58,7 @@ volatile float temperature;
 volatile float humidity;
 volatile float pressure;
 volatile float altitude;
+volatile float activeParameter;
 const uint8_t textLength[4] = {8,6,10,9};
 /* USER CODE END PV */
 
@@ -113,7 +114,6 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_TIM2_Init();
-  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   barometer_OK = LPS25HB_init();
   humidity_OK = HTS221_init();
@@ -121,32 +121,51 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-	  HTS221_get_temperature(&temperature);
-	  HTS221_get_humidity(&humidity);
-	  LPS25HB_get_pressure(&pressure);
-	  altitude = getAltitude();
-	  switch (digitCycle) {
-	  case 0:
-		  writeToDisplay(actualParam, textPosition + digitCycle, temperature);
-		  setDigt1();
-		  break;
-	  case 1:
-		  writeToDisplay(actualParam, textPosition + digitCycle, temperature);
-		  setDigt2();
-		  break;
-	  case 2:
-		  writeToDisplay(actualParam, textPosition + digitCycle, temperature);
-		  setDigt3();
-		  break;
-	  case 3:
-		  writeToDisplay(actualParam, textPosition + digitCycle, temperature);
-		  setDigt4();
-		  break;
-	  default:
-		  break;
-	  }
+	while (1) {
+		HTS221_get_temperature(&temperature);
+		HTS221_get_humidity(&humidity);
+		LPS25HB_get_pressure(&pressure);
+		altitude = getAltitude();
+		switch (actualParam) {
+		case 0:
+			activeParameter = temperature;
+			break;
+		case 1:
+			activeParameter = humidity;
+			break;
+		case 2:
+			activeParameter = pressure;
+			break;
+		case 3:
+			activeParameter = altitude;
+			break;
+		default:
+			break;
+		}
+		switch (digitCycle) {
+		case 0:
+			writeToDisplay(actualParam, textPosition + digitCycle,
+					activeParameter);
+			setDigt1();
+			break;
+		case 1:
+			writeToDisplay(actualParam, textPosition + digitCycle,
+					activeParameter);
+			setDigt2();
+			break;
+		case 2:
+			writeToDisplay(actualParam, textPosition + digitCycle,
+					activeParameter);
+			setDigt3();
+			break;
+		case 3:
+			writeToDisplay(actualParam, textPosition + digitCycle,
+					activeParameter);
+			setDigt4();
+			break;
+		default:
+			break;
+		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
