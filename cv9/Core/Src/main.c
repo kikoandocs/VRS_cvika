@@ -28,6 +28,7 @@
 #include "7segment.h"
 #include <stdio.h>
 #include <string.h>
+#include "math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,7 +52,12 @@ uint8_t digitCycle = 0;
 uint8_t textPosition = 0;
 uint8_t shiftDirection = 1;
 uint8_t actualParam = 0;
-float values[4] = {0.2,11,2222.22,3333.3};
+uint8_t barometer_OK = 0;
+uint8_t humidity_OK = 0;
+volatile float temperature;
+volatile float humidity;
+volatile float pressure;
+volatile float altitude;
 const uint8_t textLength[4] = {8,6,10,9};
 /* USER CODE END PV */
 
@@ -61,6 +67,7 @@ void SystemClock_Config(void);
 void refreshDisplay();
 void shiftText();
 void selectParam();
+float getAltitude(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -108,28 +115,33 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-
+  barometer_OK = LPS25HB_init();
+  humidity_OK = HTS221_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HTS221_get_temperature(&temperature);
+	  HTS221_get_humidity(&humidity);
+	  LPS25HB_get_pressure(&pressure);
+	  altitude = getAltitude();
 	  switch (digitCycle) {
 	  case 0:
-		  writeToDisplay(actualParam, textPosition + digitCycle, values[actualParam]);
+		  writeToDisplay(actualParam, textPosition + digitCycle, temperature);
 		  setDigt1();
 		  break;
 	  case 1:
-		  writeToDisplay(actualParam, textPosition + digitCycle, values[actualParam]);
+		  writeToDisplay(actualParam, textPosition + digitCycle, temperature);
 		  setDigt2();
 		  break;
 	  case 2:
-		  writeToDisplay(actualParam, textPosition + digitCycle, values[actualParam]);
+		  writeToDisplay(actualParam, textPosition + digitCycle, temperature);
 		  setDigt3();
 		  break;
 	  case 3:
-		  writeToDisplay(actualParam, textPosition + digitCycle, values[actualParam]);
+		  writeToDisplay(actualParam, textPosition + digitCycle, temperature);
 		  setDigt4();
 		  break;
 	  default:
@@ -177,35 +189,40 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void refreshDisplay() {
+void refreshDisplay(void) {
 	digitCycle++;
 	if (digitCycle >= 4) {
 		digitCycle = 0;
 	}
 }
-void shiftText() {
+void shiftText(void) {
 	uint8_t offset = 4;
 	textPosition += shiftDirection;
 	digitCycle = 0;
-	if (values[actualParam]<0){
+	if (temperature<0){
 		offset--;
 	}
 	if (textPosition >= textLength[actualParam]-offset || textPosition <= 0) {
 		shiftDirection *= -1;
 	}
 }
-void selectParam() {
+void selectParam(void) {
 	actualParam++;
 	if (actualParam >= 4) {
 		actualParam = 0;
 	}
 	resetCounters();
 }
-void resetCounters() {
+void resetCounters(void) {
 	digitCycle = 0;
 	textPosition = 0;
 	shiftDirection = 1;
 }
+float getAltitude(void) {
+	float refPress = 1013.25;
+	return (float)44330.00 * (1-pow(pressure/refPress,1/5.255));
+}
+
 /* USER CODE END 4 */
 
 /**
